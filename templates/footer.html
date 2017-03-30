@@ -1,0 +1,27 @@
+<footer style="margin-top: 80px;">
+    <div style="text-align: center;color: #9a9a9a;font-size: 12px;">
+        <span>@2016 Home System</span>
+    </div>
+</footer>
+<script src="/static/jquery.min.js"></script>
+<script src="/static/libs/bootstrap/js/bootstrap.min.js"></script>
+<script src="/static/libs/sweetalert-master/dist/sweetalert.min.js"></script>
+<script src="/static/libs/fileinput/js/fileinput.min.js"></script>
+<script src="/static/libs/fileinput/js/fileinput_locale_zh.js"></script>
+<script>
+    var pathname = window.location.pathname;
+    if (pathname == "/index.html") {
+        $("#index").attr("class", "active")
+    } else if (pathname == "/") {
+        $("#index").attr("class", "active")
+    } else if (pathname == "/mp3.html") {
+        $("#mp3").attr("class", "active")
+    } else if (pathname == "/alarm.html") {
+        $("#alarm").attr("class", "active")
+    } else if (pathname == "/led.html") {
+        $("#led").attr("class", "active")
+    }
+
+</script>
+</body>
+</html>

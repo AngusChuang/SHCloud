@@ -1,0 +1,180 @@
+{% include 'header.html' %}
+<div>
+    <div class="container">
+        <div class="col-md-12">
+            <div class="div1">
+                <div class="div3">
+                    <div class="div4">
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">响铃时间</label>
+                            <input type="text" class="form-control" id="times"
+                                   placeholder="列: 08:00">
+                        </div>
+
+                        <div class="form-group">
+                            <div id="d2">
+                                <input type="text" class="form-control" id="mp3_name"
+                                       placeholder="搜索内容">
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn btn-primary" onclick="search()">搜索</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="div1">
+                <div class="div3">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>响铃时间</th>
+                            <th>地 址</th>
+                            <th width="15%">创建时间</th>
+                            <th width="5%">操 作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for r in result %}
+                            <tr>
+                                <td><b>{{ r.time }}</b></td>
+                                <td>{{ r.path }}</td>
+                                <td>{{ r.create_time }}</td>
+                                <td style="text-align: center;"><span class="label label-danger btndel"
+                                                                      data-id="{{ r.id }}"> 删 除 </span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" tabindex="-1" role="dialog" id="mp3model">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">音乐列表</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>专 辑</th>
+                        <th>歌 手</th>
+                        <th>操 作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="table_list">
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+{% include 'footer.html' %}
+<script>
+    var aa = '';
+    function search() {
+        var mp3_name = $("#mp3_name").val();
+
+        if (mp3_name == "") {
+            swal("Warning!", "搜索内容不能为空", "warning");
+        }
+
+        aa = mp3_name;
+        $.ajax({
+            type: "POST",
+            url: "/mp3.html",
+            dataType: "json",
+            data: {
+                'mp3_name': mp3_name,
+                'type': "1"
+            },
+            success: function (data) {
+                var _h = '';
+                for (var i = 0; i < 10; i++) {
+                    _h += '<tr>';
+                    _h += '    <td>' + data[i].album_name + '</td>';
+                    _h += '    <td>' + data[i].artist + '</td>';
+                    _h += '    <td><button type="button" class="btn btn-info" onclick="addmp3(&quot;' + data[i].album_name + '&quot;,&quot;' + data[i].artist + '&quot;,&quot;' + data[i].mp3_url + '&quot;)">添加</button></td>';
+                    _h += '</tr>';
+                }
+                $("#table_list").html(_h);
+                $('#mp3model').modal('show');
+            }, error: function (e) {
+                console.log('error');
+            }
+        });
+    }
+
+    function addmp3(name, gs, url) {
+        var times = $("#times").val();
+
+        if (times == "") {
+            swal("Warning!", "请填写响应时间", "warning");
+            return false;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "/alarm.html",
+            dataType: "text",
+            data: {
+                'times': times,
+                'mp3path': url,
+                'types': '2'
+            },
+            success: function () {
+                swal(
+                        {
+                            title: "添加成功",
+                            text: "恭喜你,闹铃添加成功!",
+                            type: "success",
+                        },
+                        function () {
+                            location.reload(true);
+                        }
+                );
+            }, error: function (e) {
+                console.log('error');
+            }
+        });
+    }
+
+    $(".btndel").click(function () {
+        var id = $(this).attr("data-id");
+        $.ajax({
+            type: "POST",
+            url: "/alarm.html",
+            dataType: "text",
+            data: {
+                'id': id,
+                'types': 1
+            },
+            success: function () {
+                swal(
+                        {
+                            title: "删除成功",
+                            text: "恭喜你,闹铃删除成功!",
+                            type: "success",
+                        },
+                        function () {
+                            location.reload(true);
+                        }
+                );
+            }, error: function (e) {
+                console.log('error');
+            }
+        });
+    });
+</script>
